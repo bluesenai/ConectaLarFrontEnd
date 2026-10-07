@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tela_login.dart';
 
 class TelaCarregamento extends StatefulWidget {
   const TelaCarregamento({super.key});
@@ -15,10 +16,22 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
   void initState() {
     super.initState();
 
+    // Animação dos três pontos
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(milliseconds: 800),
     )..repeat();
+
+    // Aguarda 3 segundos e abre o login
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const TelaLogin(),
+        ),
+      );
+    });
   }
 
   @override
@@ -119,7 +132,9 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // =================================================
                     // LOGO
+                    // =================================================
                     Image.asset(
                       'assets/images/icone.png',
                       width: largura * 0.25,
@@ -143,7 +158,8 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
                             final distancia = (valor - index).abs();
 
                             final escala =
-                                1.0 - (distancia.clamp(0.0, 1.0) * 0.35);
+                                1.0 -
+                                (distancia.clamp(0.0, 1.0) * 0.35);
 
                             return Transform.scale(
                               scale: escala,

@@ -1,31 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const VizinhancaSolidaria());
-}
-
-class VizinhancaSolidaria extends StatelessWidget {
-  const VizinhancaSolidaria({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Vizinhança Solidária',
-
-      theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: 'Arial',
-      ),
-
-      home: const TelaChat(),
-    );
-  }
-}
-
-// ============================================================
-// TELA DE CHAT
-// ============================================================
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class TelaChat extends StatefulWidget {
   const TelaChat({super.key});
@@ -38,16 +14,22 @@ class _TelaChatState extends State<TelaChat> {
   final TextEditingController mensagemController =
       TextEditingController();
 
-  // Cores utilizadas no aplicativo
+  WebSocketChannel? canalChat;
+
+  bool conectado = false;
+
+
+  final String nomeUsuario = 'Leticia';
+
+  
+  final String cepComunidade = '12000-000';
+
+
   static const Color vermelho = Color(0xFFF5322C);
   static const Color vermelhoEscuro = Color(0xFFB7191D);
   static const Color fundo = Color(0xFF5C5052);
   static const Color fundoCampo = Color(0xFF675B5D);
-  static const Color branco = Colors.white;
 
-  // ----------------------------------------------------------
-  // MORADORES
-  // ----------------------------------------------------------
 
   final List<Map<String, String>> moradores = [
     {
@@ -64,31 +46,123 @@ class _TelaChatState extends State<TelaChat> {
     },
   ];
 
-  // ----------------------------------------------------------
-  // MENSAGENS
-  // ----------------------------------------------------------
+  
+  final List<Map<String, dynamic>> mensagens = [];
 
-  final List<Map<String, dynamic>> mensagens = [
-    {
-      'nome': 'Ana',
-      'mensagem': 'Bom dia, pessoal! Tudo bem?',
-      'minha': false,
-    },
-    {
-      'nome': 'Carlos',
-      'mensagem': 'Bom dia! Tudo certo por aqui.',
-      'minha': false,
-    },
-    {
-      'nome': 'Você',
-      'mensagem': 'Bom dia, vizinhos! 😊',
-      'minha': true,
-    },
-  ];
 
-  // ----------------------------------------------------------
+  @override
+  void initState() {
+    super.initState();
+
+    conectarChat();
+  }
+
+  // ============================================================
+  // CONECTAR AO SERVIDOR
+  // ============================================================
+
+  void conectarChat() {
+    try {
+      canalChat = WebSocketChannel.connect(
+        Uri.parse(
+          'ws://localhost:3000'
+          '?nome=${Uri.encodeComponent(nomeUsuario)}'
+          '&cep=${Uri.encodeComponent(cepComunidade)}',
+        ),
+      );
+
+      canalChat!.stream.listen(
+        (dados) {
+          try {
+            final informacao = jsonDecode(dados);
+
+            // --------------------------------------------------
+            // HISTORICO DO CHAT
+            // --------------------------------------------------
+
+            if (informacao['tipo'] == 'historico') {
+              final lista = informacao['mensagens'];
+
+              setState(() {
+                mensagens.clear();
+
+                for (final mensagem in lista) {
+                  mensagens.add({
+                    'nome': mensagem['nome_usuario'],
+                    'mensagem': mensagem['mensagem'],
+                    'minha': mensagem['nome_usuario'] == nomeUsuario,
+                  });
+                }
+              });
+            }
+
+            // --------------------------------------------------
+            // NOVA MENSAGEM
+            // --------------------------------------------------
+
+            if (informacao['tipo'] == 'nova_mensagem') {
+              setState(() {
+                mensagens.add({
+                  'nome': informacao['nome_usuario'],
+                  'mensagem': informacao['mensagem'],
+                  'minha':
+                      informacao['nome_usuario'] == nomeUsuario,
+                });
+              });
+            }
+
+            // --------------------------------------------------
+            // ERRO DO SERVIDOR
+            // --------------------------------------------------
+
+            if (informacao['tipo'] == 'erro') {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    informacao['mensagem'] ?? 'Erro no servidor.',
+                  ),
+                ),
+              );
+            }
+          } catch (erro) {
+            print('Erro ao ler mensagem: $erro');
+          }
+        },
+        onDone: () {
+          if (mounted) {
+            setState(() {
+              conectado = false;
+            });
+          }
+
+          print('Conexao com o servidor encerrada.');
+        },
+        onError: (erro) {
+          if (mounted) {
+            setState(() {
+              conectado = false;
+            });
+          }
+
+          print('Erro na conexao: $erro');
+        },
+      );
+
+      setState(() {
+        conectado = true;
+      });
+    } catch (erro) {
+      print('Erro ao conectar ao servidor: $erro');
+
+      setState(() {
+        conectado = false;
+      });
+    }
+  }
+
+  // ============================================================
   // ENVIAR MENSAGEM
-  // ----------------------------------------------------------
+  // ============================================================
 
   void enviarMensagem() {
     final texto = mensagemController.text.trim();
@@ -97,46 +171,59 @@ class _TelaChatState extends State<TelaChat> {
       return;
     }
 
-    setState(() {
-      mensagens.add({
-        'nome': 'Você',
+    if (!conectado || canalChat == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Não foi possível conectar ao servidor.',
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    canalChat!.sink.add(
+      jsonEncode({
+        'tipo': 'mensagem',
         'mensagem': texto,
-        'minha': true,
-      });
-    });
+      }),
+    );
 
     mensagemController.clear();
   }
 
-  // ----------------------------------------------------------
-  // PERFIL DO MORADOR
-  // ----------------------------------------------------------
+  // ============================================================
+  // ABRIR PERFIL
+  // ============================================================
 
   void abrirPerfil(String nome) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TelaPerfilMorador(nome: nome),
+        builder: (context) => TelaPerfilMorador(
+          nome: nome,
+        ),
       ),
     );
   }
+
+  // ============================================================
+  // TELA
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: fundo,
 
-      // ======================================================
-      // PARTE SUPERIOR
-      // ======================================================
-
       body: SafeArea(
         child: Column(
           children: [
 
-            // ------------------------------------------------
+            // ==================================================
             // TOPO
-            // ------------------------------------------------
+            // ==================================================
 
             Container(
               height: 65,
@@ -147,7 +234,6 @@ class _TelaChatState extends State<TelaChat> {
 
                   const SizedBox(width: 20),
 
-                  // Bolinhas dos moradores
                   Expanded(
                     child: Row(
                       children: moradores.map((morador) {
@@ -158,7 +244,9 @@ class _TelaChatState extends State<TelaChat> {
 
                           child: GestureDetector(
                             onTap: () {
-                              abrirPerfil(morador['nome']!);
+                              abrirPerfil(
+                                morador['nome']!,
+                              );
                             },
 
                             child: CircleAvatar(
@@ -172,7 +260,8 @@ class _TelaChatState extends State<TelaChat> {
 
                                 style: const TextStyle(
                                   color: vermelhoEscuro,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight:
+                                      FontWeight.bold,
                                   fontSize: 17,
                                 ),
                               ),
@@ -183,7 +272,6 @@ class _TelaChatState extends State<TelaChat> {
                     ),
                   ),
 
-                  // Seta voltar
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);
@@ -201,9 +289,9 @@ class _TelaChatState extends State<TelaChat> {
               ),
             ),
 
-            // =================================================
-            // ÁREA DAS MENSAGENS
-            // =================================================
+            // ==================================================
+            // MENSAGENS
+            // ==================================================
 
             Expanded(
               child: ListView.builder(
@@ -220,7 +308,7 @@ class _TelaChatState extends State<TelaChat> {
                   final mensagem = mensagens[index];
 
                   final bool minhaMensagem =
-                      mensagem['minha'];
+                      mensagem['minha'] == true;
 
                   return Align(
                     alignment: minhaMensagem
@@ -230,7 +318,9 @@ class _TelaChatState extends State<TelaChat> {
                     child: Container(
                       constraints: BoxConstraints(
                         maxWidth:
-                            MediaQuery.of(context).size.width *
+                            MediaQuery.of(context)
+                                    .size
+                                    .width *
                                 0.75,
                       ),
 
@@ -238,7 +328,8 @@ class _TelaChatState extends State<TelaChat> {
                         bottom: 14,
                       ),
 
-                      padding: const EdgeInsets.symmetric(
+                      padding:
+                          const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 11,
                       ),
@@ -252,8 +343,8 @@ class _TelaChatState extends State<TelaChat> {
                             BorderRadius.circular(18),
 
                         border: Border.all(
-                          color: Colors.white
-                              .withOpacity(0.08),
+                          color:
+                              Colors.white.withOpacity(0.08),
                         ),
                       ),
 
@@ -294,9 +385,9 @@ class _TelaChatState extends State<TelaChat> {
               ),
             ),
 
-            // =================================================
+            // ==================================================
             // CAMPO DE MENSAGEM
-            // =================================================
+            // ==================================================
 
             Container(
               padding: const EdgeInsets.fromLTRB(
@@ -311,7 +402,6 @@ class _TelaChatState extends State<TelaChat> {
               child: Row(
                 children: [
 
-                  // Campo de texto
                   Expanded(
                     child: TextField(
                       controller: mensagemController,
@@ -352,7 +442,8 @@ class _TelaChatState extends State<TelaChat> {
                           borderRadius:
                               BorderRadius.circular(30),
 
-                          borderSide: BorderSide.none,
+                          borderSide:
+                              BorderSide.none,
                         ),
                       ),
                     ),
@@ -360,12 +451,12 @@ class _TelaChatState extends State<TelaChat> {
 
                   const SizedBox(width: 10),
 
-                  // Botão enviar
                   Container(
                     width: 52,
                     height: 52,
 
-                    decoration: const BoxDecoration(
+                    decoration:
+                        const BoxDecoration(
                       color: vermelhoEscuro,
                       shape: BoxShape.circle,
                     ),
@@ -389,9 +480,15 @@ class _TelaChatState extends State<TelaChat> {
     );
   }
 
+  // ============================================================
+  // ENCERRAR
+  // ============================================================
+
   @override
   void dispose() {
+    canalChat?.sink.close();
     mensagemController.dispose();
+
     super.dispose();
   }
 }
@@ -421,9 +518,9 @@ class TelaPerfilMorador extends StatelessWidget {
         child: Column(
           children: [
 
-            // ------------------------------------------------
+            // ==================================================
             // TOPO
-            // ------------------------------------------------
+            // ==================================================
 
             Container(
               height: 65,
@@ -448,6 +545,7 @@ class TelaPerfilMorador extends StatelessWidget {
 
                   const Text(
                     'Perfil do morador',
+
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -464,9 +562,9 @@ class TelaPerfilMorador extends StatelessWidget {
 
             const SizedBox(height: 40),
 
-            // ------------------------------------------------
-            // FOTO / PERFIL
-            // ------------------------------------------------
+            // ==================================================
+            // FOTO
+            // ==================================================
 
             CircleAvatar(
               radius: 55,
@@ -498,9 +596,9 @@ class TelaPerfilMorador extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // ------------------------------------------------
-            // INFORMAÇÕES
-            // ------------------------------------------------
+            // ==================================================
+            // INFORMACOES
+            // ==================================================
 
             Container(
               margin: const EdgeInsets.symmetric(
@@ -511,6 +609,7 @@ class TelaPerfilMorador extends StatelessWidget {
 
               decoration: BoxDecoration(
                 color: const Color(0xFF4D4446),
+
                 borderRadius:
                     BorderRadius.circular(15),
               ),
@@ -520,6 +619,7 @@ class TelaPerfilMorador extends StatelessWidget {
 
                   const Row(
                     children: [
+
                       Icon(
                         Icons.person,
                         color: Colors.white,
@@ -529,6 +629,7 @@ class TelaPerfilMorador extends StatelessWidget {
 
                       Text(
                         'Morador da rua',
+
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -541,6 +642,7 @@ class TelaPerfilMorador extends StatelessWidget {
 
                   const Row(
                     children: [
+
                       Icon(
                         Icons.location_on,
                         color: Colors.white,
@@ -550,6 +652,7 @@ class TelaPerfilMorador extends StatelessWidget {
 
                       Text(
                         'Comunidade',
+
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -563,9 +666,9 @@ class TelaPerfilMorador extends StatelessWidget {
 
             const Spacer(),
 
-            // ------------------------------------------------
-            // BOTÃO VOLTAR
-            // ------------------------------------------------
+            // ==================================================
+            // BOTAO VOLTAR
+            // ==================================================
 
             Container(
               width: 190,
@@ -580,11 +683,16 @@ class TelaPerfilMorador extends StatelessWidget {
                   Navigator.pop(context);
                 },
 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: vermelhoEscuro,
-                  foregroundColor: Colors.white,
+                style:
+                    ElevatedButton.styleFrom(
+                  backgroundColor:
+                      vermelhoEscuro,
 
-                  shape: RoundedRectangleBorder(
+                  foregroundColor:
+                      Colors.white,
+
+                  shape:
+                      RoundedRectangleBorder(
                     borderRadius:
                         BorderRadius.circular(25),
                   ),
@@ -592,6 +700,7 @@ class TelaPerfilMorador extends StatelessWidget {
 
                 child: const Text(
                   'Voltar',
+
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

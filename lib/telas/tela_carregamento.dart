@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tela_login.dart';
 
 import 'tela_login.dart';
 
@@ -17,11 +18,13 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
   void initState() {
     super.initState();
 
+    // Animação dos três pontos
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(milliseconds: 800),
     )..repeat();
 
+<<<<<<< HEAD
     _abrirLogin();
   }
 
@@ -34,6 +37,18 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
       context,
       MaterialPageRoute(builder: (context) => const TelaLogin()),
     );
+=======
+    // Aguarda 3 segundos e abre o login
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const TelaLogin(),
+        ),
+      );
+    });
+>>>>>>> 96da5c7c4d2b40d091df2a7e3c6ac8c8a11e3858
   }
 
   @override
@@ -117,6 +132,12 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+<<<<<<< HEAD
+=======
+                    // =================================================
+                    // LOGO
+                    // =================================================
+>>>>>>> 96da5c7c4d2b40d091df2a7e3c6ac8c8a11e3858
                     Image.asset(
                       'assets/images/icone.png',
                       width: largura * 0.25,
@@ -137,7 +158,8 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
                             final distancia = (valor - index).abs();
 
                             final escala =
-                                1.0 - (distancia.clamp(0.0, 1.0) * 0.35);
+                                1.0 -
+                                (distancia.clamp(0.0, 1.0) * 0.35);
 
                             return Transform.scale(
                               scale: escala,

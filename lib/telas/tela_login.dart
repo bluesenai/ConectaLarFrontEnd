@@ -32,14 +32,18 @@ class _TelaLoginState extends State<TelaLogin> {
       body: SizedBox.expand(
         child: Stack(
           children: [
-            // Fundo
+            // =====================================================
+            // FUNDO
+            // =====================================================
             Container(
               width: double.infinity,
               height: double.infinity,
               color: const Color(0xFF991D19),
             ),
 
-            // Círculo superior esquerdo
+            // =====================================================
+            // CÍRCULO SUPERIOR ESQUERDO
+            // =====================================================
             Positioned(
               top: -altura * 0.12,
               left: -largura * 0.30,
@@ -53,7 +57,9 @@ class _TelaLoginState extends State<TelaLogin> {
               ),
             ),
 
-            // Forma central/direita
+            // =====================================================
+            // FORMA CENTRAL / DIREITA
+            // =====================================================
             Positioned(
               top: -altura * 0.03,
               right: -largura * 0.52,
@@ -67,7 +73,9 @@ class _TelaLoginState extends State<TelaLogin> {
               ),
             ),
 
-            // Círculo inferior esquerdo
+            // =====================================================
+            // CÍRCULO INFERIOR ESQUERDO
+            // =====================================================
             Positioned(
               bottom: -altura * 0.18,
               left: -largura * 0.35,
@@ -81,7 +89,9 @@ class _TelaLoginState extends State<TelaLogin> {
               ),
             ),
 
-            // Círculo inferior direito
+            // =====================================================
+            // CÍRCULO INFERIOR DIREITO
+            // =====================================================
             Positioned(
               bottom: -altura * 0.08,
               right: -largura * 0.35,
@@ -95,241 +105,327 @@ class _TelaLoginState extends State<TelaLogin> {
               ),
             ),
 
-            Container(
-              width: 105,
-              height: 105,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Image.asset(
-                  'assets/images/ciconeroda.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
+            // =====================================================
+            // CONTEÚDO DO LOGIN
+            // =====================================================
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: largura * 0.11),
+                    child: Column(
+                      children: [
+                        // Espaço superior
+                        SizedBox(height: altura * 0.06),
 
-            const SizedBox(height: 52),
+                        // =================================================
+                        // LOGO
+                        // =================================================
+                        Container(
+                          width: largura * 0.27,
+                          height: largura * 0.27,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(largura * 0.03),
+                            child: Image.asset(
+                              'assets/images/iconeroda.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
 
-            // Título
-            const Text(
-              'Login',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
+                        SizedBox(height: altura * 0.045),
 
-            const SizedBox(height: 12),
+                        // =================================================
+                        // TÍTULO
+                        // =================================================
+                        const Text(
+                          'Login',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
 
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'E-mail',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+                        SizedBox(height: altura * 0.025),
 
-            const SizedBox(height: 2),
+                        // =================================================
+                        // E-MAIL
+                        // =================================================
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'E-mail',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
 
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: InputDecoration(
-                hintText: 'Username@email.com',
-                hintStyle: const TextStyle(color: Colors.white70, fontSize: 13),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6),
-                  borderSide: const BorderSide(color: Colors.white, width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6),
-                  borderSide: const BorderSide(color: Colors.white, width: 1.5),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-              ),
-            ),
+                        const SizedBox(height: 6),
 
-            const SizedBox(height: 17),
+                        TextField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Username@email.com',
+                            hintStyle: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 1.5,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 13,
+                            ),
+                          ),
+                        ),
 
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Senha',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+                        SizedBox(height: altura * 0.02),
 
-            const SizedBox(height: 2),
+                        // =================================================
+                        // SENHA
+                        // =================================================
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Senha',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
 
-            TextField(
-              controller: senhaController,
-              obscureText: !mostrarSenha,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              decoration: InputDecoration(
-                hintText: 'xxxxxxxx',
-                hintStyle: const TextStyle(color: Colors.white70, fontSize: 13),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6),
-                  borderSide: const BorderSide(color: Colors.white, width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6),
-                  borderSide: const BorderSide(color: Colors.white, width: 1.5),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      mostrarSenha = !mostrarSenha;
-                    });
-                  },
-                  icon: Icon(
-                    mostrarSenha ? Icons.visibility : Icons.visibility_off,
-                    color: Colors.white70,
-                    size: 20,
+                        const SizedBox(height: 6),
+
+                        TextField(
+                          controller: senhaController,
+                          obscureText: !mostrarSenha,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'xxxxxxxx',
+                            hintStyle: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 1.5,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 13,
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  mostrarSenha = !mostrarSenha;
+                                });
+                              },
+                              icon: Icon(
+                                mostrarSenha
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.white70,
+                                size: 21,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // =================================================
+                        // ESQUECI MINHA SENHA
+                        // =================================================
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              // Navegação será adicionada depois.
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: const Text(
+                              'Esqueci minha senha',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: altura * 0.015),
+
+                        // =================================================
+                        // BOTÃO PRÓXIMO
+                        // =================================================
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Backend será implementado depois.
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFB1211D),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                            ),
+                            child: const Text(
+                              'Próximo',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // =================================================
+                        // TERMOS
+                        // =================================================
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: Checkbox(
+                                value: aceitouTermos,
+                                onChanged: (valor) {
+                                  setState(() {
+                                    aceitouTermos = valor ?? false;
+                                  });
+                                },
+                                side: const BorderSide(
+                                  color: Colors.white,
+                                  width: 1,
+                                ),
+                                checkColor: const Color(0xFF991D19),
+                                activeColor: Colors.white,
+                              ),
+                            ),
+
+                            const SizedBox(width: 6),
+
+                            const Expanded(
+                              child: Text(
+                                'Li e aceito os Termos de Uso e a Política de Privacidade',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // =================================================
+                        // OPÇÕES INFERIORES
+                        // =================================================
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: TextButton(
+                                onPressed: () {
+                                  // Página do prestador futuramente.
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: const Text(
+                                  'Prestador de serviço',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            Flexible(
+                              child: TextButton(
+                                onPressed: () {
+                                  // Página de cadastro futuramente.
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: const Text(
+                                  'Não tem conta? Cadastre-se',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: altura * 0.04),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-
-            // Esqueci minha senha
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Navegação será adicionada depois.
-                },
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: const Text(
-                  'Esqueci minha senha',
-                  style: TextStyle(color: Colors.white, fontSize: 7),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            // Botão Próximo
-            SizedBox(
-              width: double.infinity,
-              height: 28,
-              child: ElevatedButton(
-                onPressed: () {
-                  // A navegação será adicionada depois.
-                  //
-                  // Aqui futuramente vamos:
-                  // 1. validar e-mail e senha;
-                  // 2. enviar para o backend;
-                  // 3. verificar o usuário no banco;
-                  // 4. ir para a próxima tela.
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFB7191E),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text(
-                  'Próximo',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 5),
-
-            // Termos
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: Checkbox(
-                    value: aceitouTermos,
-                    onChanged: (valor) {
-                      setState(() {
-                        aceitouTermos = valor ?? false;
-                      });
-                    },
-                    side: const BorderSide(color: Colors.white, width: 1),
-                    checkColor: const Color(0xFFE52F29),
-                    activeColor: Colors.white,
-                  ),
-                ),
-                const Flexible(
-                  child: Text(
-                    'Li e aceito os Termos de Uso e a Política de Privacidade',
-                    style: TextStyle(color: Colors.white, fontSize: 6.5),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            // Opções inferiores
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    // Página do prestador futuramente.
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text(
-                    'Prestador de serviço',
-                    style: TextStyle(color: Colors.white, fontSize: 6.5),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // Página de cadastro futuramente.
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text(
-                    'Não tem conta? Cadastre-se',
-                    style: TextStyle(color: Colors.white, fontSize: 6.5),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 45),
           ],
         ),
       ),

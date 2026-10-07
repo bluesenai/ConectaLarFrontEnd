@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'telas/tela_carregamento.dart';
 
 void main() {

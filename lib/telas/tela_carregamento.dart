@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'tela_login.dart';
+
 class TelaCarregamento extends StatefulWidget {
   const TelaCarregamento({super.key});
 
@@ -19,6 +21,19 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
+
+    _abrirLogin();
+  }
+
+  Future<void> _abrirLogin() async {
+    await Future<void>.delayed(Duration.zero);
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const TelaLogin()),
+    );
   }
 
   @override
@@ -38,18 +53,13 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
       body: SizedBox.expand(
         child: Stack(
           children: [
-            // =====================================================
             // FUNDO
-            // =====================================================
             Container(
               width: double.infinity,
               height: double.infinity,
               color: const Color(0xFF991D19),
             ),
 
-            // =====================================================
-            // CÍRCULO SUPERIOR ESQUERDO
-            // =====================================================
             Positioned(
               top: -altura * 0.12,
               left: -largura * 0.30,
@@ -63,9 +73,6 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
               ),
             ),
 
-            // =====================================================
-            // FORMA CENTRAL/DIREITA
-            // =====================================================
             Positioned(
               top: -altura * 0.03,
               right: -largura * 0.52,
@@ -79,9 +86,6 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
               ),
             ),
 
-            // =====================================================
-            // CÍRCULO INFERIOR ESQUERDO
-            // =====================================================
             Positioned(
               bottom: -altura * 0.18,
               left: -largura * 0.35,
@@ -95,9 +99,6 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
               ),
             ),
 
-            // =====================================================
-            // CÍRCULO INFERIOR DIREITO
-            // =====================================================
             Positioned(
               bottom: -altura * 0.08,
               right: -largura * 0.35,
@@ -111,15 +112,11 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
               ),
             ),
 
-            // =====================================================
-            // CONTEÚDO CENTRAL
-            // =====================================================
             SafeArea(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // LOGO
                     Image.asset(
                       'assets/images/icone.png',
                       width: largura * 0.25,
@@ -129,9 +126,6 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
 
                     SizedBox(height: altura * 0.025),
 
-                    // =================================================
-                    // TRÊS PONTOS
-                    // =================================================
                     AnimatedBuilder(
                       animation: _controller,
                       builder: (context, child) {

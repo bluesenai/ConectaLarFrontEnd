@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'tela_inicial.dart';
 
 class TelaCriarVizinhanca extends StatefulWidget {
   const TelaCriarVizinhanca({super.key});
@@ -200,27 +201,35 @@ class _TelaCriarVizinhancaState
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                actions: [
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            const Color(0xFFB7191E),
-                                        foregroundColor: Colors.white,
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25),
-                                        ),
-                                      ),
-                                      child: const Text('Próximo'),
-                                    ),
-                                  ),
-                                ],
+                                
+actions: [
+  SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      onPressed: () {
+        Navigator.pop(context); // Fecha o aviso
+
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TelaInicial(),
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFB7191E),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+      ),
+      child: const Text('Próximo'),
+    ),
+  ),
+],
+
                               );
                             },
                           );

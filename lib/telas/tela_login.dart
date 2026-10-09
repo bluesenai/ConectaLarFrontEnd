@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../services/api_service.dart';
 import 'tela_cadastro.dart';
 import 'tela_vizinhanca.dart';
 
@@ -15,6 +17,62 @@ class _TelaLoginState extends State<TelaLogin> {
 
   bool mostrarSenha = false;
   bool aceitouTermos = false;
+  bool carregando = false;
+
+  Future<void> fazerLogin() async {
+    final email = emailController.text.trim();
+    final senha = senhaController.text;
+
+    if (email.isEmpty || senha.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha o e-mail e a senha.')),
+      );
+      return;
+    }
+
+    if (carregando) return;
+
+    setState(() {
+      carregando = true;
+    });
+
+    try {
+      final sucesso = await ApiService.fazerLogin(email, senha);
+
+      if (!mounted) return;
+
+      if (sucesso) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login realizado com sucesso!')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const TelaVizinhanca()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('E-mail ou senha incorretos.')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Não foi possível conectar ao servidor. Confira se o backend está iniciado.',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          carregando = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -25,39 +83,11 @@ class _TelaLoginState extends State<TelaLogin> {
 
   @override
   Widget build(BuildContext context) {
-    final tamanho = MediaQuery.of(context).size;
-
-    final largura = tamanho.width;
-    final altura = tamanho.height;
+    final size = MediaQuery.of(context).size;
+    final largura = size.width;
+    final altura = size.height;
 
     return Scaffold(
-<<<<<<< HEAD
-      body: SizedBox.expand(
-        child: Stack(
-          children: [
-            // =====================================================
-            // FUNDO
-            // =====================================================
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: const Color(0xFF991D19),
-            ),
-
-            // =====================================================
-            // CÍRCULO SUPERIOR ESQUERDO
-            // =====================================================
-            Positioned(
-              top: -altura * 0.12,
-              left: -largura * 0.30,
-              child: Container(
-                width: largura * 0.90,
-                height: largura * 0.90,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD22720),
-                  shape: BoxShape.circle,
-                ),
-=======
       backgroundColor: const Color(0xFF991D19),
       body: SafeArea(
         child: SizedBox(
@@ -65,393 +95,14 @@ class _TelaLoginState extends State<TelaLogin> {
           height: altura,
           child: Stack(
             children: [
-              // =====================================================
-              // FUNDO
-              // =====================================================
-
+              // Fundo principal.
               Container(
                 width: double.infinity,
                 height: double.infinity,
                 color: const Color(0xFF991D19),
->>>>>>> 96da5c7c4d2b40d091df2a7e3c6ac8c8a11e3858
               ),
 
-<<<<<<< HEAD
-            // =====================================================
-            // FORMA CENTRAL / DIREITA
-            // =====================================================
-            Positioned(
-              top: -altura * 0.03,
-              right: -largura * 0.52,
-              child: Container(
-                width: largura * 1.15,
-                height: altura * 0.60,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFB1211D),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-
-            // =====================================================
-            // CÍRCULO INFERIOR ESQUERDO
-            // =====================================================
-            Positioned(
-              bottom: -altura * 0.18,
-              left: -largura * 0.35,
-              child: Container(
-                width: largura * 0.95,
-                height: largura * 0.95,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD22720),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-
-            // =====================================================
-            // CÍRCULO INFERIOR DIREITO
-            // =====================================================
-            Positioned(
-              bottom: -altura * 0.08,
-              right: -largura * 0.35,
-              child: Container(
-                width: largura * 0.90,
-                height: largura * 0.90,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEE2E27),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-
-            // =====================================================
-            // CONTEÚDO DO LOGIN
-            // =====================================================
-            SafeArea(
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: largura * 0.11),
-                    child: Column(
-                      children: [
-                        // Espaço superior
-                        SizedBox(height: altura * 0.06),
-
-                        // =================================================
-                        // LOGO
-                        // =================================================
-                        Container(
-                          width: largura * 0.27,
-                          height: largura * 0.27,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(largura * 0.03),
-                            child: Image.asset(
-                              'assets/images/iconeroda.png',
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: altura * 0.045),
-
-                        // =================================================
-                        // TÍTULO
-                        // =================================================
-                        const Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-
-                        SizedBox(height: altura * 0.025),
-
-                        // =================================================
-                        // E-MAIL
-                        // =================================================
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'E-mail',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        TextField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Username@email.com',
-                            hintStyle: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 13,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: altura * 0.02),
-
-                        // =================================================
-                        // SENHA
-                        // =================================================
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Senha',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        TextField(
-                          controller: senhaController,
-                          obscureText: !mostrarSenha,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'xxxxxxxx',
-                            hintStyle: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 13,
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  mostrarSenha = !mostrarSenha;
-                                });
-                              },
-                              icon: Icon(
-                                mostrarSenha
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: Colors.white70,
-                                size: 21,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // =================================================
-                        // ESQUECI MINHA SENHA
-                        // =================================================
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              // Navegação será adicionada depois.
-                            },
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text(
-                              'Esqueci minha senha',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: altura * 0.015),
-
-                        // =================================================
-                        // BOTÃO PRÓXIMO
-                        // =================================================
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Backend será implementado depois.
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFB1211D),
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                            ),
-                            child: const Text(
-                              'Próximo',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // =================================================
-                        // TERMOS
-                        // =================================================
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: Checkbox(
-                                value: aceitouTermos,
-                                onChanged: (valor) {
-                                  setState(() {
-                                    aceitouTermos = valor ?? false;
-                                  });
-                                },
-                                side: const BorderSide(
-                                  color: Colors.white,
-                                  width: 1,
-                                ),
-                                checkColor: const Color(0xFF991D19),
-                                activeColor: Colors.white,
-                              ),
-                            ),
-
-                            const SizedBox(width: 6),
-
-                            const Expanded(
-                              child: Text(
-                                'Li e aceito os Termos de Uso e a Política de Privacidade',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        // =================================================
-                        // OPÇÕES INFERIORES
-                        // =================================================
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              child: TextButton(
-                                onPressed: () {
-                                  // Página do prestador futuramente.
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: const Text(
-                                  'Prestador de serviço',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            Flexible(
-                              child: TextButton(
-                                onPressed: () {
-                                  // Página de cadastro futuramente.
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: const Text(
-                                  'Não tem conta? Cadastre-se',
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: altura * 0.04),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-=======
-              // =====================================================
-              // FORMA SUPERIOR ESQUERDA
-              // =====================================================
-
+              // Formas decorativas do fundo.
               Positioned(
                 top: -altura * 0.20,
                 left: -largura * 0.35,
@@ -459,16 +110,11 @@ class _TelaLoginState extends State<TelaLogin> {
                   width: largura * 0.95,
                   height: largura * 0.95,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFD92C26),
+                    color: Color(0xFFD22720),
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
-
-              // =====================================================
-              // FORMA CENTRAL/DIREITA
-              // =====================================================
-
               Positioned(
                 top: altura * 0.05,
                 right: -largura * 0.65,
@@ -481,11 +127,6 @@ class _TelaLoginState extends State<TelaLogin> {
                   ),
                 ),
               ),
-
-              // =====================================================
-              // FORMA INFERIOR ESQUERDA
-              // =====================================================
-
               Positioned(
                 bottom: -altura * 0.12,
                 left: -largura * 0.50,
@@ -493,16 +134,11 @@ class _TelaLoginState extends State<TelaLogin> {
                   width: largura * 1.10,
                   height: largura * 1.10,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFD92C26),
+                    color: Color(0xFFD22720),
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
-
-              // =====================================================
-              // FORMA INFERIOR DIREITA
-              // =====================================================
-
               Positioned(
                 bottom: -altura * 0.15,
                 right: -largura * 0.40,
@@ -510,16 +146,13 @@ class _TelaLoginState extends State<TelaLogin> {
                   width: largura * 0.95,
                   height: largura * 0.95,
                   decoration: const BoxDecoration(
-                    color: Color(0xFFEF302A),
+                    color: Color(0xFFEE2E27),
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
 
-              // =====================================================
-              // CONTEÚDO DO LOGIN
-              // =====================================================
-
+              // Conteúdo da tela.
               SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
@@ -530,29 +163,22 @@ class _TelaLoginState extends State<TelaLogin> {
                     children: [
                       SizedBox(height: altura * 0.08),
 
-                      // =================================================
-                      // ÍCONE
-                      // =================================================
-
+                      // Logo.
                       Container(
                         width: largura * 0.42,
                         height: largura * 0.42,
+                        padding: const EdgeInsets.all(14),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        padding: const EdgeInsets.all(14),
                         child: Image.asset(
                           'assets/images/iconeroda.png',
                           fit: BoxFit.contain,
                         ),
                       ),
 
-                      SizedBox(height: altura * 0.09),
-
-                      // =================================================
-                      // TÍTULO LOGIN
-                      // =================================================
+                      SizedBox(height: altura * 0.07),
 
                       const Align(
                         alignment: Alignment.centerLeft,
@@ -571,10 +197,6 @@ class _TelaLoginState extends State<TelaLogin> {
 
                       const SizedBox(height: 12),
 
-                      // =================================================
-                      // E-MAIL
-                      // =================================================
-
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -586,12 +208,11 @@ class _TelaLoginState extends State<TelaLogin> {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 4),
-
                       TextField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -599,7 +220,7 @@ class _TelaLoginState extends State<TelaLogin> {
                         decoration: InputDecoration(
                           hintText: 'Username@email.com',
                           hintStyle: const TextStyle(
-                            color: Colors.white,
+                            color: Colors.white70,
                             fontSize: 14,
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -625,10 +246,6 @@ class _TelaLoginState extends State<TelaLogin> {
 
                       const SizedBox(height: 20),
 
-                      // =================================================
-                      // SENHA
-                      // =================================================
-
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -640,12 +257,12 @@ class _TelaLoginState extends State<TelaLogin> {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 4),
-
                       TextField(
                         controller: senhaController,
                         obscureText: !mostrarSenha,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => fazerLogin(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -653,7 +270,7 @@ class _TelaLoginState extends State<TelaLogin> {
                         decoration: InputDecoration(
                           hintText: 'xxxxxxxx',
                           hintStyle: const TextStyle(
-                            color: Colors.white,
+                            color: Colors.white70,
                             fontSize: 14,
                           ),
                           contentPadding: const EdgeInsets.symmetric(
@@ -691,80 +308,75 @@ class _TelaLoginState extends State<TelaLogin> {
                         ),
                       ),
 
-                      // =================================================
-                      // ESQUECI MINHA SENHA
-                      // =================================================
-
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            // Navegação será adicionada posteriormente.
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'A recuperação de senha será implementada depois.',
+                                ),
+                              ),
+                            );
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
-                            tapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: const Text(
                             'Esqueci minha senha',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 10),
                           ),
                         ),
                       ),
 
                       const SizedBox(height: 10),
 
-                      // =================================================
-                      // BOTÃO PRÓXIMO
-                      // =================================================
-
                       SizedBox(
                         width: double.infinity,
-                        height: 42,
+                        height: 46,
                         child: ElevatedButton(
-                         onPressed: () {
- Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => const TelaVizinhanca(),
-  ),
-);
-},
+                          onPressed: carregando ? null : fazerLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFB7191E),
                             foregroundColor: Colors.white,
+                            disabledBackgroundColor: const Color(
+                              0xFFB7191D,
+                            ).withValues(alpha: 0.7),
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
                           ),
-                          child: const Text(
-                            'Próximo',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: carregando
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Próximo',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                         ),
                       ),
 
                       const SizedBox(height: 8),
 
-                      // =================================================
-                      // TERMOS
-                      // =================================================
-
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: 20,
-                            height: 20,
+                            width: 24,
+                            height: 24,
                             child: Checkbox(
                               value: aceitouTermos,
                               onChanged: (valor) {
@@ -780,13 +392,13 @@ class _TelaLoginState extends State<TelaLogin> {
                               activeColor: Colors.white,
                             ),
                           ),
-                          const SizedBox(width: 5),
+                          const SizedBox(width: 6),
                           const Expanded(
                             child: Text(
                               'Li e aceito os Termos de Uso e a Política de Privacidade',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 8,
+                                fontSize: 9,
                               ),
                             ),
                           ),
@@ -795,65 +407,69 @@ class _TelaLoginState extends State<TelaLogin> {
 
                       const SizedBox(height: 8),
 
-                      // =================================================
-                      // OPÇÕES INFERIORES
-                      // =================================================
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextButton(
-                            onPressed: () {
-                              // Página do prestador futuramente.
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text(
-                              'Prestador de serviço',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
+                          Flexible(
+                            child: TextButton(
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'A área do prestador será implementada depois.',
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text(
+                                'Prestador de serviço',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                ),
                               ),
                             ),
                           ),
-                         TextButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const TelaCadastro(),
-      ),
-    );
-  },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text(
-                              'Não tem conta? Cadastre-se',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
+                          Flexible(
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const TelaCadastro(),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text(
+                                'Não tem conta? Cadastre-se',
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
 
-                      const SizedBox(height: 25),
+                      SizedBox(height: altura * 0.04),
                     ],
                   ),
                 ),
               ),
             ],
           ),
->>>>>>> 96da5c7c4d2b40d091df2a7e3c6ac8c8a11e3858
         ),
       ),
     );

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tela_login.dart';
 
-import 'tela_login.dart';
-
 class TelaCarregamento extends StatefulWidget {
   const TelaCarregamento({super.key});
 
@@ -12,43 +10,24 @@ class TelaCarregamento extends StatefulWidget {
 
 class _TelaCarregamentoState extends State<TelaCarregamento>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
 
-    // Animação dos três pontos
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     )..repeat();
 
-<<<<<<< HEAD
-    _abrirLogin();
-  }
-
-  Future<void> _abrirLogin() async {
-    await Future<void>.delayed(Duration.zero);
-
-    if (!mounted) return;
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const TelaLogin()),
-    );
-=======
-    // Aguarda 3 segundos e abre o login
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
 
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const TelaLogin(),
-        ),
+        MaterialPageRoute(builder: (context) => const TelaLogin()),
       );
     });
->>>>>>> 96da5c7c4d2b40d091df2a7e3c6ac8c8a11e3858
   }
 
   @override
@@ -57,73 +36,68 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
     super.dispose();
   }
 
+  Widget _circulo({
+    required double largura,
+    required double altura,
+    required Color cor,
+  }) {
+    return Container(
+      width: largura,
+      height: altura,
+      decoration: BoxDecoration(color: cor, shape: BoxShape.circle),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     final largura = size.width;
     final altura = size.height;
 
     return Scaffold(
+      backgroundColor: const Color(0xFF991D19),
       body: SizedBox.expand(
         child: Stack(
           children: [
-            // FUNDO
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: const Color(0xFF991D19),
-            ),
+            Container(color: const Color(0xFF991D19)),
 
             Positioned(
               top: -altura * 0.12,
               left: -largura * 0.30,
-              child: Container(
-                width: largura * 0.90,
-                height: largura * 0.90,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD22720),
-                  shape: BoxShape.circle,
-                ),
+              child: _circulo(
+                largura: largura * 0.90,
+                altura: largura * 0.90,
+                cor: const Color(0xFFD22720),
               ),
             ),
 
             Positioned(
               top: -altura * 0.03,
               right: -largura * 0.52,
-              child: Container(
-                width: largura * 1.15,
-                height: altura * 0.60,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFB1211D),
-                  shape: BoxShape.circle,
-                ),
+              child: _circulo(
+                largura: largura * 1.15,
+                altura: altura * 0.60,
+                cor: const Color(0xFFB1211D),
               ),
             ),
 
             Positioned(
               bottom: -altura * 0.18,
               left: -largura * 0.35,
-              child: Container(
-                width: largura * 0.95,
-                height: largura * 0.95,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFD22720),
-                  shape: BoxShape.circle,
-                ),
+              child: _circulo(
+                largura: largura * 0.95,
+                altura: largura * 0.95,
+                cor: const Color(0xFFD22720),
               ),
             ),
 
             Positioned(
               bottom: -altura * 0.08,
               right: -largura * 0.35,
-              child: Container(
-                width: largura * 0.90,
-                height: largura * 0.90,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEE2E27),
-                  shape: BoxShape.circle,
-                ),
+              child: _circulo(
+                largura: largura * 0.90,
+                altura: largura * 0.90,
+                cor: const Color(0xFFEE2E27),
               ),
             ),
 
@@ -132,17 +106,18 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-<<<<<<< HEAD
-=======
-                    // =================================================
-                    // LOGO
-                    // =================================================
->>>>>>> 96da5c7c4d2b40d091df2a7e3c6ac8c8a11e3858
                     Image.asset(
                       'assets/images/icone.png',
                       width: largura * 0.25,
                       height: largura * 0.25,
                       fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.home_rounded,
+                          size: largura * 0.20,
+                          color: Colors.white,
+                        );
+                      },
                     ),
 
                     SizedBox(height: altura * 0.025),
@@ -158,8 +133,7 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
                             final distancia = (valor - index).abs();
 
                             final escala =
-                                1.0 -
-                                (distancia.clamp(0.0, 1.0) * 0.35);
+                                1.0 - (distancia.clamp(0.0, 1.0) * 0.35);
 
                             return Transform.scale(
                               scale: escala,

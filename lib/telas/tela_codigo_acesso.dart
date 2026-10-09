@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tela_inicial.dart';
 
 class TelaCodigoAcesso extends StatefulWidget {
   const TelaCodigoAcesso({super.key});
@@ -224,11 +225,14 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
                       width: double.infinity,
                       height: 42,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Futuramente:
-                          // verificar o CEP no banco
-                          // e entrar na comunidade.
-                        },
+                       onPressed: () {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const TelaInicial(),
+    ),
+  );
+},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFB7191E),
                           foregroundColor: Colors.white,

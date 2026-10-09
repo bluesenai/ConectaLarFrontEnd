@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'tela_codigo_acesso.dart';
 import 'tela_login.dart';
+import 'tela_criar_vizinhanca.dart';
 
 class TelaVizinhanca extends StatelessWidget {
   const TelaVizinhanca({super.key});
@@ -189,10 +190,14 @@ class TelaVizinhanca extends StatelessWidget {
                     width: largura * 0.68,
                     height: 42,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // A tela de criação da vizinhança
-                        // será feita posteriormente.
-                      },
+                     onPressed: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const TelaCriarVizinhanca(),
+    ),
+  );
+},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFB7191E),
                         foregroundColor: Colors.white,

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'tela_codigo_acesso.dart';
 import 'tela_login.dart';
 import 'tela_criar_vizinhanca.dart';
+<<<<<<< HEAD
+=======
+import 'tela_inicial.dart';
+>>>>>>> 0323dee9c689196b5d2e2edcb99c7d12f18822f8
 
 class TelaVizinhanca extends StatelessWidget {
   const TelaVizinhanca({super.key});

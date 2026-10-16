@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'tela_chat.dart';
+import 'tela_seguranca.dart';
+import 'tela_peticoes.dart';
 
 class TelaInicial extends StatelessWidget {
   const TelaInicial({super.key});
@@ -85,14 +88,22 @@ class TelaInicial extends StatelessWidget {
                       children: [
                         Expanded(
                           child: blocoInicial(
+                            context: context,
+
                             icone: Icons.chat_outlined,
                             titulo: 'CHAT',
                             largura: largura,
                           ),
                         ),
+
                         const SizedBox(width: 12),
                         Expanded(
                           child: blocoInicial(
+
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: blocoInicial(
+                            context: context,
                             icone: Icons.shield,
                             titulo: 'SEGURANÇA',
                             largura: largura,

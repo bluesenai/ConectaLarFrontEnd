@@ -1,5 +1,9 @@
 
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
+import 'tela_inicial.dart';
+>>>>>>> 0323dee9c689196b5d2e2edcb99c7d12f18822f8
 
 class TelaCriarVizinhanca extends StatefulWidget {
   const TelaCriarVizinhanca({super.key});
@@ -175,8 +179,13 @@ class _TelaCriarVizinhancaState
                       child: ElevatedButton(
                         onPressed: () {
                           showDialog(
+<<<<<<< HEAD
                             context: context,
                             builder: (context) {
+=======
+  context: context,
+  builder: (contextDialog) {
+>>>>>>> 0323dee9c689196b5d2e2edcb99c7d12f18822f8
                               return AlertDialog(
                                 backgroundColor:
                                     const Color(0xFFEFEFEF),
@@ -200,6 +209,7 @@ class _TelaCriarVizinhancaState
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+<<<<<<< HEAD
                                 actions: [
                                   SizedBox(
                                     width: double.infinity,
@@ -221,6 +231,37 @@ class _TelaCriarVizinhancaState
                                     ),
                                   ),
                                 ],
+=======
+                                
+actions: [
+  SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      onPressed: () {
+        Navigator.pop(context); // Fecha o aviso
+
+        Navigator.pushReplacement(
+         
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TelaInicial(),
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFB7191E),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(25),
+        ),
+      ),
+      child: const Text('Próximo'),
+    ),
+  ),
+],
+
+>>>>>>> 0323dee9c689196b5d2e2edcb99c7d12f18822f8
                               );
                             },
                           );

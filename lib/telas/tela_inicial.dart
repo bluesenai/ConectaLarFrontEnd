@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'tela_chat.dart';
+import 'tela_seguranca.dart';
+import 'tela_peticoes.dart';
 
 class TelaInicial extends StatelessWidget {
   const TelaInicial({super.key});
@@ -85,14 +88,16 @@ class TelaInicial extends StatelessWidget {
                       children: [
                         Expanded(
                           child: blocoInicial(
+                            context: context,
                             icone: Icons.chat_outlined,
                             titulo: 'CHAT',
                             largura: largura,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 20),
                         Expanded(
                           child: blocoInicial(
+                            context: context,
                             icone: Icons.shield,
                             titulo: 'SEGURANÇA',
                             largura: largura,
@@ -108,6 +113,7 @@ class TelaInicial extends StatelessWidget {
                       children: [
                         Expanded(
                           child: blocoInicial(
+                            context: context,
                             icone: Icons.edit_document,
                             titulo: 'PETIÇÕES',
                             largura: largura,
@@ -116,6 +122,7 @@ class TelaInicial extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: blocoInicial(
+                            context: context,
                             icone: Icons
                                 .notification_important_outlined,
                             titulo: 'RECLAMAÇÕES',
@@ -132,6 +139,7 @@ class TelaInicial extends StatelessWidget {
                       children: [
                         Expanded(
                           child: blocoInicial(
+                            context: context,
                             icone: Icons.camera_alt_outlined,
                             titulo: 'CÂMERAS',
                             largura: largura,
@@ -140,6 +148,7 @@ class TelaInicial extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: blocoInicial(
+                            context: context,
                             icone: Icons.groups,
                             titulo: 'SEU BAIRRO',
                             largura: largura,
@@ -155,6 +164,7 @@ class TelaInicial extends StatelessWidget {
                       children: [
                         Expanded(
                           child: blocoInicial(
+                            context: context,
                             icone: Icons
                                 .account_balance_wallet_outlined,
                             titulo: 'PAGAMENTOS',
@@ -178,6 +188,7 @@ class TelaInicial extends StatelessWidget {
   }
 
   Widget blocoInicial({
+    required BuildContext context,
     required IconData icone,
     required String titulo,
     required double largura,
@@ -189,9 +200,31 @@ class TelaInicial extends StatelessWidget {
         borderRadius: BorderRadius.circular(7),
         child: InkWell(
           borderRadius: BorderRadius.circular(7),
-          onTap: () {
-            // Navegação de cada funcionalidade será adicionada depois.
-          },
+         onTap: () {
+  if (titulo == 'CHAT') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TelaChat(),
+      ),
+    );
+  } else if (titulo == 'SEGURANÇA') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TelaSeguranca(),
+      ),
+    );
+  
+   } else if (titulo == 'PETIÇÕES') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TelaPeticoes(),
+      ),
+    );
+   }
+},
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

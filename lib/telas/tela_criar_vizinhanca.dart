@@ -176,8 +176,8 @@ class _TelaCriarVizinhancaState
                       child: ElevatedButton(
                         onPressed: () {
                           showDialog(
-                            context: context,
-                            builder: (context) {
+  context: context,
+  builder: (contextDialog) {
                               return AlertDialog(
                                 backgroundColor:
                                     const Color(0xFFEFEFEF),
@@ -210,7 +210,7 @@ actions: [
         Navigator.pop(context); // Fecha o aviso
 
         Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
+         
           context,
           MaterialPageRoute(
             builder: (context) => const TelaInicial(),

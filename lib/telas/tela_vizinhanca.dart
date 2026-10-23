@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'tela_codigo_acesso.dart';
 import 'tela_login.dart';
 import 'tela_criar_vizinhanca.dart';
-<<<<<<< HEAD
-=======
 import 'tela_inicial.dart';
->>>>>>> 0323dee9c689196b5d2e2edcb99c7d12f18822f8
 
 class TelaVizinhanca extends StatelessWidget {
   const TelaVizinhanca({super.key});
@@ -26,7 +23,6 @@ class TelaVizinhanca extends StatelessWidget {
             // =====================================================
             // FUNDO
             // =====================================================
-
             Container(
               width: double.infinity,
               height: double.infinity,
@@ -36,7 +32,6 @@ class TelaVizinhanca extends StatelessWidget {
             // =====================================================
             // FORMA SUPERIOR ESQUERDA
             // =====================================================
-
             Positioned(
               top: -altura * 0.18,
               left: -largura * 0.35,
@@ -53,7 +48,6 @@ class TelaVizinhanca extends StatelessWidget {
             // =====================================================
             // FORMA CENTRAL / DIREITA
             // =====================================================
-
             Positioned(
               top: -altura * 0.02,
               right: -largura * 0.60,
@@ -70,7 +64,6 @@ class TelaVizinhanca extends StatelessWidget {
             // =====================================================
             // FORMA INFERIOR ESQUERDA
             // =====================================================
-
             Positioned(
               bottom: -altura * 0.08,
               left: -largura * 0.50,
@@ -87,7 +80,6 @@ class TelaVizinhanca extends StatelessWidget {
             // =====================================================
             // FORMA INFERIOR DIREITA
             // =====================================================
-
             Positioned(
               bottom: -altura * 0.10,
               right: -largura * 0.40,
@@ -104,27 +96,21 @@ class TelaVizinhanca extends StatelessWidget {
             // =====================================================
             // BOTÃO SUPERIOR
             // =====================================================
-
             IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+              onPressed: () {
+                Navigator.pop(context);
+              },
 
-                      padding: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
 
-                      alignment: Alignment.centerLeft,
+              alignment: Alignment.centerLeft,
 
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                    ),
+              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+            ),
 
             // =====================================================
             // CONTEÚDO
             // =====================================================
-
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -132,7 +118,6 @@ class TelaVizinhanca extends StatelessWidget {
                   // =================================================
                   // ÍCONE
                   // =================================================
-
                   Container(
                     width: largura * 0.38,
                     height: largura * 0.38,
@@ -152,7 +137,6 @@ class TelaVizinhanca extends StatelessWidget {
                   // =================================================
                   // ENTRAR EM UMA VIZINHANÇA
                   // =================================================
-
                   SizedBox(
                     width: largura * 0.68,
                     height: 42,
@@ -161,8 +145,7 @@ class TelaVizinhanca extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                const TelaCodigoAcesso(),
+                            builder: (context) => const TelaCodigoAcesso(),
                           ),
                         );
                       },
@@ -189,19 +172,18 @@ class TelaVizinhanca extends StatelessWidget {
                   // =================================================
                   // CRIAR UMA VIZINHANÇA
                   // =================================================
-
                   SizedBox(
                     width: largura * 0.68,
                     height: 42,
                     child: ElevatedButton(
-                     onPressed: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const TelaCriarVizinhanca(),
-    ),
-  );
-},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TelaCriarVizinhanca(),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFB7191E),
                         foregroundColor: Colors.white,

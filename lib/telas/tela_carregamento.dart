@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import 'tela_login.dart';
+import 'tela_vizinhanca.dart';
 
 class TelaCarregamento extends StatefulWidget {
   const TelaCarregamento({super.key});
@@ -12,6 +14,29 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
+  Future<void> verificarSessao() async {
+    try {
+      final existeSessao = await ApiService.existeSessao();
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              existeSessao ? const TelaVizinhanca() : const TelaLogin(),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TelaLogin()),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -21,13 +46,7 @@ class _TelaCarregamentoState extends State<TelaCarregamento>
       duration: const Duration(milliseconds: 800),
     )..repeat();
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const TelaLogin()),
-      );
-    });
+    verificarSessao();
   }
 
   @override

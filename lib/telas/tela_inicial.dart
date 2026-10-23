@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'tela_chat.dart';
 import 'tela_seguranca.dart';
@@ -28,33 +27,19 @@ class TelaInicial extends StatelessWidget {
               color: vermelho,
               child: Row(
                 children: [
-                  // MENU
                   IconButton(
-                    onPressed: () {
-                      // Tela de menu futuramente.
-                    },
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.white,
-                      size: 25,
-                    ),
+                    onPressed: () {},
+                    icon: const Icon(Icons.menu, color: Colors.white, size: 25),
                   ),
-
-                  // NOTIFICAÇÕES
                   IconButton(
-                    onPressed: () {
-                      // Tela de notificações futuramente.
-                    },
+                    onPressed: () {},
                     icon: const Icon(
                       Icons.notifications_none,
                       color: Colors.white,
                       size: 24,
                     ),
                   ),
-
                   const Spacer(),
-
-                  // MENSAGEM DE BOAS-VINDAS
                   const Expanded(
                     flex: 3,
                     child: Text(
@@ -68,7 +53,6 @@ class TelaInicial extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(width: 8),
                 ],
               ),
@@ -88,25 +72,31 @@ class TelaInicial extends StatelessWidget {
                       children: [
                         Expanded(
                           child: blocoInicial(
-                            context: context,
-
                             icone: Icons.chat_outlined,
                             titulo: 'CHAT',
                             largura: largura,
+                            aoClicar: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => TelaChat()),
+                              );
+                            },
                           ),
                         ),
-
                         const SizedBox(width: 12),
                         Expanded(
                           child: blocoInicial(
-
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: blocoInicial(
-                            context: context,
                             icone: Icons.shield,
                             titulo: 'SEGURANÇA',
                             largura: largura,
+                            aoClicar: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => TelaSeguranca(),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -122,13 +112,20 @@ class TelaInicial extends StatelessWidget {
                             icone: Icons.edit_document,
                             titulo: 'PETIÇÕES',
                             largura: largura,
+                            aoClicar: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => TelaPeticoes(),
+                                ),
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: blocoInicial(
-                            icone: Icons
-                                .notification_important_outlined,
+                            icone: Icons.notification_important_outlined,
                             titulo: 'RECLAMAÇÕES',
                             largura: largura,
                           ),
@@ -161,21 +158,18 @@ class TelaInicial extends StatelessWidget {
 
                     const SizedBox(height: 14),
 
-                    // QUARTA LINHA — PAGAMENTOS
+                    // QUARTA LINHA
                     Row(
                       children: [
                         Expanded(
                           child: blocoInicial(
-                            icone: Icons
-                                .account_balance_wallet_outlined,
+                            icone: Icons.account_balance_wallet_outlined,
                             titulo: 'PAGAMENTOS',
                             largura: largura,
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
-                          child: SizedBox(height: 87),
-                        ),
+                        const Expanded(child: SizedBox(height: 87)),
                       ],
                     ),
                   ],
@@ -192,6 +186,7 @@ class TelaInicial extends StatelessWidget {
     required IconData icone,
     required String titulo,
     required double largura,
+    VoidCallback? aoClicar,
   }) {
     return SizedBox(
       height: 87,
@@ -200,22 +195,14 @@ class TelaInicial extends StatelessWidget {
         borderRadius: BorderRadius.circular(7),
         child: InkWell(
           borderRadius: BorderRadius.circular(7),
-          onTap: () {
-            // Navegação de cada funcionalidade será adicionada depois.
-          },
+          onTap: aoClicar,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icone,
-                color: Colors.white,
-                size: 27,
-              ),
+              Icon(icone, color: Colors.white, size: 27),
               const SizedBox(height: 2),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: Text(
                   titulo,
                   textAlign: TextAlign.center,

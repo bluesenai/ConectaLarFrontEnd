@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tela_inicial.dart';
+import '../services/api_service.dart';
 
 class TelaCodigoAcesso extends StatefulWidget {
   const TelaCodigoAcesso({super.key});
@@ -10,6 +11,52 @@ class TelaCodigoAcesso extends StatefulWidget {
 
 class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
   final TextEditingController cepController = TextEditingController();
+
+  Future<void> _entrarEmComunidade() async {
+    final cep = cepController.text.replaceAll(RegExp(r'\D'), '');
+
+    if (cep.length != 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Digite um CEP válido com 8 números.')),
+      );
+      return;
+    }
+
+    try {
+      final usuarioId = await ApiService.obterIdSalvo();
+
+      if (usuarioId == null) {
+        throw Exception('Usuário não identificado. Faça login novamente.');
+      }
+
+      final resultado = await ApiService.entrarComunidade(
+        usuarioId: usuarioId,
+        cep: cep,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            resultado['mensagem']?.toString() ??
+                'Você entrou na comunidade com sucesso!',
+          ),
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const TelaInicial()),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -33,7 +80,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
             // =====================================================
             // FUNDO
             // =====================================================
-
             Container(
               width: double.infinity,
               height: double.infinity,
@@ -43,7 +89,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
             // =====================================================
             // FORMA SUPERIOR ESQUERDA
             // =====================================================
-
             Positioned(
               top: -altura * 0.18,
               left: -largura * 0.35,
@@ -60,7 +105,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
             // =====================================================
             // FORMA CENTRAL / DIREITA
             // =====================================================
-
             Positioned(
               top: -altura * 0.02,
               right: -largura * 0.60,
@@ -77,7 +121,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
             // =====================================================
             // FORMA INFERIOR ESQUERDA
             // =====================================================
-
             Positioned(
               bottom: -altura * 0.08,
               left: -largura * 0.50,
@@ -94,7 +137,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
             // =====================================================
             // FORMA INFERIOR DIREITA
             // =====================================================
-
             Positioned(
               bottom: -altura * 0.10,
               right: -largura * 0.40,
@@ -111,7 +153,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
             // =====================================================
             // SETA VOLTAR
             // =====================================================
-
             Positioned(
               top: 20,
               left: 20,
@@ -130,12 +171,9 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
             // =====================================================
             // CONTEÚDO
             // =====================================================
-
             Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: largura * 0.11,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: largura * 0.11),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +181,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
                     // =================================================
                     // ÍCONE
                     // =================================================
-
                     Center(
                       child: Container(
                         width: largura * 0.38,
@@ -165,7 +202,6 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
                     // =================================================
                     // CÓDIGO DE ACESSO
                     // =================================================
-
                     const Text(
                       'Código de acesso',
                       style: TextStyle(
@@ -180,14 +216,10 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
                     // =================================================
                     // CAMPO CEP
                     // =================================================
-
                     TextField(
                       controller: cepController,
                       keyboardType: TextInputType.number,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'O cep da sua rua',
                         hintStyle: const TextStyle(
@@ -220,19 +252,11 @@ class _TelaCodigoAcessoState extends State<TelaCodigoAcesso> {
                     // =================================================
                     // BOTÃO
                     // =================================================
-
                     SizedBox(
                       width: double.infinity,
                       height: 42,
                       child: ElevatedButton(
-                       onPressed: () {
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const TelaInicial(),
-    ),
-  );
-},
+                        onPressed: _entrarEmComunidade,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFB7191E),
                           foregroundColor: Colors.white,

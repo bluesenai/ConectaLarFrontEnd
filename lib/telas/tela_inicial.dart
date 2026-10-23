@@ -2,13 +2,57 @@ import 'package:flutter/material.dart';
 import 'tela_chat.dart';
 import 'tela_seguranca.dart';
 import 'tela_peticoes.dart';
+import '../services/api_service.dart';
 
-class TelaInicial extends StatelessWidget {
+class TelaInicial extends StatefulWidget {
   const TelaInicial({super.key});
 
+  @override
+  State<TelaInicial> createState() => _TelaInicialState();
+}
+
+class _TelaInicialState extends State<TelaInicial> {
   static const Color vermelho = Color(0xFFF5322C);
   static const Color fundo = Color(0xFF5C5052);
   static const Color bloco = Color(0xFF4D4244);
+
+  String nomeRua = 'Carregando...';
+
+  @override
+  void initState() {
+    super.initState();
+    carregarComunidade();
+  }
+
+  Future<void> carregarComunidade() async {
+    try {
+      final usuarioId = await ApiService.obterIdSalvo();
+
+      if (usuarioId == null) {
+        if (!mounted) return;
+        setState(() {
+          nomeRua = 'Comunidade não identificada';
+        });
+        return;
+      }
+
+      final dados = await ApiService.buscarMinhaComunidade(usuarioId);
+
+      if (!mounted) return;
+
+      setState(() {
+        nomeRua = dados['rua']?.toString() ?? 'Rua não informada';
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        nomeRua = 'Não foi possível carregar a rua';
+      });
+
+      debugPrint('Erro ao carregar comunidade: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +84,12 @@ class TelaInicial extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  const Expanded(
+                  Expanded(
                     flex: 3,
                     child: Text(
-                      'Bem vindo à\ncomunidade ***!',
+                      'Bem-vindo à\n$nomeRua',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -57,6 +101,8 @@ class TelaInicial extends StatelessWidget {
                 ],
               ),
             ),
+
+            // CONTEÚDO DOS BLOCOS
 
             // CONTEÚDO DOS BLOCOS
             Expanded(

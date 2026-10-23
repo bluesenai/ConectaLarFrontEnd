@@ -123,4 +123,108 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_chaveNome);
   }
+
+  static Future<Map<String, dynamic>> entrarComunidade({
+    required int usuarioId,
+    required String cep,
+  }) async {
+    final url = Uri.parse('$baseUrl/comunidade/entrar');
+
+    final resposta = await http
+        .post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'usuarioId': usuarioId, 'cep': cep}),
+        )
+        .timeout(const Duration(seconds: 10));
+
+    if (resposta.statusCode == 200) {
+      final dados = jsonDecode(resposta.body);
+
+      if (dados is Map<String, dynamic>) {
+        return dados;
+      }
+
+      return {'mensagem': 'Entrada realizada com sucesso'};
+    }
+
+    String mensagem = resposta.body;
+
+    try {
+      final dados = jsonDecode(resposta.body);
+
+      if (dados is Map && dados['message'] != null) {
+        mensagem = dados['message'].toString();
+      }
+    } catch (_) {}
+
+    throw Exception(
+      mensagem.isNotEmpty ? mensagem : 'Não foi possível entrar na vizinhança.',
+    );
+  }
+
+  static Future<Map<String, dynamic>> buscarMinhaComunidade(
+    int usuarioId,
+  ) async {
+    final url = Uri.parse('$baseUrl/usuario/$usuarioId/comunidade');
+
+    final resposta = await http.get(url).timeout(const Duration(seconds: 10));
+
+    if (resposta.statusCode == 200) {
+      return jsonDecode(resposta.body) as Map<String, dynamic>;
+    }
+
+    throw Exception(
+      'Não foi possível carregar sua vizinhança: '
+      '${resposta.body}',
+    );
+  }
+
+  static Future<List<Map<String, dynamic>>> buscarMoradores(
+    int comunidadeId,
+  ) async {
+    final url = Uri.parse('$baseUrl/comunidade/$comunidadeId/moradores');
+
+    final resposta = await http.get(url).timeout(const Duration(seconds: 10));
+
+    if (resposta.statusCode == 200) {
+      final dados = jsonDecode(resposta.body) as List;
+
+      return dados.map((item) => Map<String, dynamic>.from(item)).toList();
+    }
+
+    throw Exception(
+      'Não foi possível carregar os moradores: '
+      '${resposta.body}',
+    );
+  }
+
+  static Future<List<dynamic>> buscarMensagens(int usuarioId) async {
+    final resposta = await http.get(
+      Uri.parse('$baseUrl/mensagem/listar?usuarioId=$usuarioId'),
+    );
+
+    if (resposta.statusCode == 200) {
+      return jsonDecode(resposta.body) as List<dynamic>;
+    }
+
+    throw Exception('Erro ao carregar mensagens: ${resposta.statusCode}');
+  }
+
+  static Future<Map<String, dynamic>> enviarMensagem({
+    required int usuarioId,
+    required String texto,
+  }) async {
+    final resposta = await http.post(
+      Uri.parse('$baseUrl/mensagem/enviar').replace(
+        queryParameters: {'usuarioId': usuarioId.toString(), 'texto': texto},
+      ),
+    );
+
+    if (resposta.statusCode == 200) {
+      return jsonDecode(resposta.body) as Map<String, dynamic>;
+    }
+
+    throw Exception('Erro ao enviar mensagem: ${resposta.body}');
+  }
 }

@@ -39,7 +39,7 @@
     },
     {
       "name": "crypto",
-      "rootUri": "file:///C:/Users/sesi3dib/AppData/Local/Pub/Cache/hosted/pub.dev/crypto-3.0.7",
+      "rootUri": "file:///C:/Users/sesi3dib/AppData/Local/Pub/Cache/hosted/pub.dev/crypto-3.0.8",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -99,7 +99,7 @@
     },
     {
       "name": "jni",
-      "rootUri": "file:///C:/Users/sesi3dib/AppData/Local/Pub/Cache/hosted/pub.dev/jni-1.1.0",
+      "rootUri": "file:///C:/Users/sesi3dib/AppData/Local/Pub/Cache/hosted/pub.dev/jni-1.1.1",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -201,7 +201,7 @@
     },
     {
       "name": "shared_preferences_android",
-      "rootUri": "file:///C:/Users/sesi3dib/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.5.3",
+      "rootUri": "file:///C:/Users/sesi3dib/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.5.4",
       "packageUri": "lib/",
       "languageVersion": "3.12"
     },

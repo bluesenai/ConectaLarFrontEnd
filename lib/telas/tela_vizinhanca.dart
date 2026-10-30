@@ -98,8 +98,15 @@ class TelaVizinhanca extends StatelessWidget {
             // =====================================================
             IconButton(
               onPressed: () {
-                Navigator.pop(context);
-              },
+  debugPrint('SETA CLICADA - VOLTANDO PARA LOGIN');
+
+  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+    MaterialPageRoute(
+      builder: (context) => const TelaLogin(),
+    ),
+    (route) => false,
+  );
+},
 
               padding: EdgeInsets.zero,
 

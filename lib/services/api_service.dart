@@ -124,44 +124,52 @@ class ApiService {
     return prefs.getString(_chaveNome);
   }
 
-  static Future<Map<String, dynamic>> entrarComunidade({
-    required int usuarioId,
-    required String cep,
-  }) async {
-    final url = Uri.parse('$baseUrl/comunidade/entrar');
+ 
+static Future<Map<String, dynamic>> entrarComunidade({
+  required int usuarioId,
+  required String cep,
+}) async {
+  final url = Uri.parse('$baseUrl/comunidade/entrar');
 
-    final resposta = await http
-        .post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'usuarioId': usuarioId, 'cep': cep}),
-        )
-        .timeout(const Duration(seconds: 10));
+  final resposta = await http
+      .post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'usuarioId': usuarioId, 'cep': cep}),
+      )
+      .timeout(const Duration(seconds: 10));
 
-    if (resposta.statusCode == 200) {
+  if (resposta.statusCode == 200) {
+    try {
       final dados = jsonDecode(resposta.body);
 
       if (dados is Map<String, dynamic>) {
         return dados;
       }
 
-      return {'mensagem': 'Entrada realizada com sucesso'};
+      return {'mensagem': resposta.body};
+    } catch (_) {
+      return {'mensagem': resposta.body};
     }
-
-    String mensagem = resposta.body;
-
-    try {
-      final dados = jsonDecode(resposta.body);
-
-      if (dados is Map && dados['message'] != null) {
-        mensagem = dados['message'].toString();
-      }
-    } catch (_) {}
-
-    throw Exception(
-      mensagem.isNotEmpty ? mensagem : 'Não foi possível entrar na vizinhança.',
-    );
   }
+
+  String mensagem = resposta.body;
+
+  try {
+    final dados = jsonDecode(resposta.body);
+
+    if (dados is Map && dados['message'] != null) {
+      mensagem = dados['message'].toString();
+    }
+  } catch (_) {}
+
+  throw Exception(
+    mensagem.isNotEmpty
+        ? mensagem
+        : 'Não foi possível entrar na vizinhança.',
+  );
+}
+
 
   static Future<Map<String, dynamic>> buscarMinhaComunidade(
     int usuarioId,

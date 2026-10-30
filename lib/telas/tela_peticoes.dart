@@ -20,9 +20,10 @@ class TelaPeticoes extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
 
+            // LOGO
             Container(
-              width: 92,
-              height: 92,
+              width: 110,
+              height: 110,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -35,46 +36,47 @@ class TelaPeticoes extends StatelessWidget {
                   return const Icon(
                     Icons.home_work_outlined,
                     color: vermelho,
-                    size: 50,
+                    size: 60,
                   );
                 },
               ),
             ),
 
-            const SizedBox(height: 9),
+            const SizedBox(height: 12),
 
+            // BOTÃO CRIAR PETIÇÃO
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 34),
               child: SizedBox(
                 width: double.infinity,
-                height: 78,
+                height: 105,
                 child: Material(
                   color: bloco,
                   borderRadius: BorderRadius.circular(9),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(9),
                     onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const TelaCriarPeticao(),
-    ),
-  );
-},
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TelaCriarPeticao(),
+                        ),
+                      );
+                    },
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.add_circle_outline,
                           color: Color(0xFFBDB0B0),
-                          size: 37,
+                          size: 40,
                         ),
-                        SizedBox(height: 2),
+                        SizedBox(height: 5),
                         Text(
                           'Criar uma nova petição',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 11,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -85,9 +87,9 @@ class TelaPeticoes extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 11),
+            const SizedBox(height: 16),
 
-         
+            // LISTA DE PETIÇÕES
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 34),
@@ -96,7 +98,7 @@ class TelaPeticoes extends StatelessWidget {
                     titulo: 'PETIÇÃO 1',
                     assinaturas: '00',
                   ),
-                  SizedBox(height: 11),
+                  SizedBox(height: 16),
                   CartaoPeticao(
                     titulo: 'PETIÇÃO 2',
                     assinaturas: '00',
@@ -105,12 +107,12 @@ class TelaPeticoes extends StatelessWidget {
               ),
             ),
 
-                                                                                                                                                                                                                                                                        
+            // BOTÃO VOLTAR
             Padding(
               padding: const EdgeInsets.only(bottom: 24, top: 8),
               child: SizedBox(
-                width: 84,
-                height: 27,
+                width: 110,
+                height: 40,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -127,7 +129,7 @@ class TelaPeticoes extends StatelessWidget {
                   child: const Text(
                     'Voltar',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -154,22 +156,22 @@ class CartaoPeticao extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 78,
+      height: 115,
       child: Material(
         color: const Color(0xFFCC302E),
         borderRadius: BorderRadius.circular(9),
         child: InkWell(
           borderRadius: BorderRadius.circular(9),
           onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const TelaAssinarPeticao(),
-    ),
-  );
-},
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TelaAssinarPeticao(),
+              ),
+            );
+          },
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(13, 10, 8, 8),
+            padding: const EdgeInsets.fromLTRB(15, 12, 10, 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -177,7 +179,7 @@ class CartaoPeticao extends StatelessWidget {
                   titulo,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 11,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -186,7 +188,7 @@ class CartaoPeticao extends StatelessWidget {
                   '****************',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 10,
+                    fontSize: 15,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -195,7 +197,7 @@ class CartaoPeticao extends StatelessWidget {
                   '$assinaturas pessoas assinaram',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 11,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

@@ -1,15 +1,58 @@
 
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import 'tela_criar_peticao.dart';
 import 'tela_assinar_peticao.dart';
 
-class TelaPeticoes extends StatelessWidget {
+class TelaPeticoes extends StatefulWidget {
   const TelaPeticoes({super.key});
 
+  @override
+  State<TelaPeticoes> createState() => _TelaPeticoesState();
+}
+
+class _TelaPeticoesState extends State<TelaPeticoes> {
   static const Color fundo = Color(0xFF5C5052);
   static const Color vermelho = Color(0xFFCC302E);
   static const Color vermelhoEscuro = Color(0xFFB7191E);
   static const Color bloco = Color(0xFF4D4244);
+
+  List<Map<String, dynamic>> peticoes = [];
+  bool carregando = true;
+  String? erro;
+
+  @override
+  void initState() {
+    super.initState();
+    carregarPeticoes();
+  }
+
+  Future<void> carregarPeticoes() async {
+    try {
+      final usuarioId = await ApiService.obterIdSalvo();
+
+      if (usuarioId == null) {
+        throw Exception('Usuário não identificado. Faça login novamente.');
+      }
+
+      final resultado = await ApiService.buscarPeticoes(usuarioId);
+
+      if (!mounted) return;
+
+      setState(() {
+        peticoes = resultado;
+        carregando = false;
+        erro = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        carregando = false;
+        erro = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,14 +96,16 @@ class TelaPeticoes extends StatelessWidget {
                   borderRadius: BorderRadius.circular(9),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(9),
-                    onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const TelaCriarPeticao(),
-    ),
-  );
-},
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TelaCriarPeticao(),
+                        ),
+                      );
+
+                      carregarPeticoes();
+                    },
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -87,25 +132,86 @@ class TelaPeticoes extends StatelessWidget {
 
             const SizedBox(height: 11),
 
-         
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 34),
-                children: const [
-                  CartaoPeticao(
-                    titulo: 'PETIÇÃO 1',
-                    assinaturas: '00',
-                  ),
-                  SizedBox(height: 11),
-                  CartaoPeticao(
-                    titulo: 'PETIÇÃO 2',
-                    assinaturas: '00',
-                  ),
-                ],
-              ),
+              child: carregando
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    )
+                  : erro != null
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  erro!,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      carregando = true;
+                                      erro = null;
+                                    });
+                                    carregarPeticoes();
+                                  },
+                                  child: const Text('Tentar novamente'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : peticoes.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Nenhuma petição cadastrada ainda.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 34,
+                              ),
+                              itemCount: peticoes.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 11),
+                              itemBuilder: (context, index) {
+                                final peticao = peticoes[index];
+
+                                return CartaoPeticao(
+                                  titulo: peticao['titulo']?.toString() ??
+                                      'Petição',
+                                  assinaturas:
+                                      (peticao['quantidadeAssinaturas'] ?? 0)
+                                          .toString(),
+                                  onTap: () async {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                     builder: (context) => TelaAssinarPeticao(
+  peticao: peticao,
+),
+                                      ),
+                                    );
+
+                                    carregarPeticoes();
+                                  },
+                                );
+                              },
+                            ),
             ),
 
-                                                                                                                                                                                                                                                                        
             Padding(
               padding: const EdgeInsets.only(bottom: 24, top: 8),
               child: SizedBox(
@@ -144,11 +250,13 @@ class TelaPeticoes extends StatelessWidget {
 class CartaoPeticao extends StatelessWidget {
   final String titulo;
   final String assinaturas;
+  final VoidCallback onTap;
 
   const CartaoPeticao({
     super.key,
     required this.titulo,
     required this.assinaturas,
+    required this.onTap,
   });
 
   @override
@@ -160,14 +268,7 @@ class CartaoPeticao extends StatelessWidget {
         borderRadius: BorderRadius.circular(9),
         child: InkWell(
           borderRadius: BorderRadius.circular(9),
-          onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const TelaAssinarPeticao(),
-    ),
-  );
-},
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(13, 10, 8, 8),
             child: Column(
@@ -175,6 +276,8 @@ class CartaoPeticao extends StatelessWidget {
               children: [
                 Text(
                   titulo,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 11,

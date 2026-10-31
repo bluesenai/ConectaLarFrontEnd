@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 class TelaCriarPeticao extends StatefulWidget {
   const TelaCriarPeticao({super.key});
@@ -16,6 +17,8 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
   final TextEditingController tituloController = TextEditingController();
   final TextEditingController motivoController = TextEditingController();
 
+  bool enviando = false;
+
   @override
   void dispose() {
     tituloController.dispose();
@@ -23,9 +26,11 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
     super.dispose();
   }
 
-  void enviarPeticao() {
-    if (tituloController.text.trim().isEmpty ||
-        motivoController.text.trim().isEmpty) {
+  Future<void> enviarPeticao() async {
+    final titulo = tituloController.text.trim();
+    final descricao = motivoController.text.trim();
+
+    if (titulo.isEmpty || descricao.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Preencha o título e o motivo da petição.'),
@@ -34,55 +39,95 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
       return;
     }
 
-    showDialog<void>(
-      context: context,
-      builder: (contextDialog) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFFF0F0F0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          title: const Text(
-            'ENVIADO',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFFCC302E),
-              fontSize: 23,
-              fontWeight: FontWeight.bold,
+    setState(() {
+      enviando = true;
+    });
+
+    try {
+      final usuarioId = await ApiService.obterIdSalvo();
+
+      if (usuarioId == null) {
+        throw Exception('Usuário não identificado. Faça login novamente.');
+      }
+
+      await ApiService.criarPeticao(
+        usuarioId: usuarioId,
+        titulo: titulo,
+        descricao: descricao,
+      );
+
+      if (!mounted) return;
+
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (contextDialog) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFFF0F0F0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-          ),
-          content: const Text(
-            'Sua petição agora está disponível para os outros moradores.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(contextDialog).pop();
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: vermelhoEscuro,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: const Text('Próximo'),
+            title: const Text(
+              'ENVIADO',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFFCC302E),
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
-        );
-      },
-    );
+            content: const Text(
+              'Sua petição agora está disponível para os outros moradores.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            actions: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(contextDialog).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: vermelhoEscuro,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: const Text('Próximo'),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          enviando = false;
+        });
+      }
+    }
   }
 
   @override
@@ -139,7 +184,7 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
               width: 84,
               height: 27,
               child: ElevatedButton(
-                onPressed: enviarPeticao,
+                onPressed: enviando ? null : enviarPeticao,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: vermelhoEscuro,
                   foregroundColor: Colors.white,
@@ -149,13 +194,22 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                child: const Text(
-                  'Enviar',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: enviando
+                    ? const SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Enviar',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
 
@@ -166,9 +220,11 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
               width: 84,
               height: 27,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: enviando
+                    ? null
+                    : () {
+                        Navigator.pop(context);
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: vermelhoEscuro,
                   foregroundColor: Colors.white,
@@ -215,7 +271,6 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           Expanded(
             child: TextField(
               controller: controller,
@@ -232,7 +287,6 @@ class _TelaCriarPeticaoState extends State<TelaCriarPeticao> {
               ),
             ),
           ),
-
           const Align(
             alignment: Alignment.bottomRight,
             child: Icon(

@@ -1,15 +1,58 @@
 
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import 'tela_criar_peticao.dart';
 import 'tela_assinar_peticao.dart';
 
-class TelaPeticoes extends StatelessWidget {
+class TelaPeticoes extends StatefulWidget {
   const TelaPeticoes({super.key});
 
+  @override
+  State<TelaPeticoes> createState() => _TelaPeticoesState();
+}
+
+class _TelaPeticoesState extends State<TelaPeticoes> {
   static const Color fundo = Color(0xFF5C5052);
   static const Color vermelho = Color(0xFFCC302E);
   static const Color vermelhoEscuro = Color(0xFFB7191E);
   static const Color bloco = Color(0xFF4D4244);
+
+  List<Map<String, dynamic>> peticoes = [];
+  bool carregando = true;
+  String? erro;
+
+  @override
+  void initState() {
+    super.initState();
+    carregarPeticoes();
+  }
+
+  Future<void> carregarPeticoes() async {
+    try {
+      final usuarioId = await ApiService.obterIdSalvo();
+
+      if (usuarioId == null) {
+        throw Exception('Usuário não identificado. Faça login novamente.');
+      }
+
+      final resultado = await ApiService.buscarPeticoes(usuarioId);
+
+      if (!mounted) return;
+
+      setState(() {
+        peticoes = resultado;
+        carregando = false;
+        erro = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        carregando = false;
+        erro = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +63,9 @@ class TelaPeticoes extends StatelessWidget {
           children: [
             const SizedBox(height: 28),
 
-            // LOGO
             Container(
-              width: 110,
-              height: 110,
+              width: 92,
+              height: 92,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -36,32 +78,33 @@ class TelaPeticoes extends StatelessWidget {
                   return const Icon(
                     Icons.home_work_outlined,
                     color: vermelho,
-                    size: 60,
+                    size: 50,
                   );
                 },
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 9),
 
-            // BOTÃO CRIAR PETIÇÃO
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 34),
               child: SizedBox(
                 width: double.infinity,
-                height: 105,
+                height: 78,
                 child: Material(
                   color: bloco,
                   borderRadius: BorderRadius.circular(9),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(9),
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const TelaCriarPeticao(),
                         ),
                       );
+
+                      carregarPeticoes();
                     },
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -69,14 +112,14 @@ class TelaPeticoes extends StatelessWidget {
                         Icon(
                           Icons.add_circle_outline,
                           color: Color(0xFFBDB0B0),
-                          size: 40,
+                          size: 37,
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 2),
                         Text(
                           'Criar uma nova petição',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 17,
+                            fontSize: 11,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -87,32 +130,93 @@ class TelaPeticoes extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 11),
 
-            // LISTA DE PETIÇÕES
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 34),
-                children: const [
-                  CartaoPeticao(
-                    titulo: 'PETIÇÃO 1',
-                    assinaturas: '00',
-                  ),
-                  SizedBox(height: 16),
-                  CartaoPeticao(
-                    titulo: 'PETIÇÃO 2',
-                    assinaturas: '00',
-                  ),
-                ],
-              ),
+              child: carregando
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    )
+                  : erro != null
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  erro!,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      carregando = true;
+                                      erro = null;
+                                    });
+                                    carregarPeticoes();
+                                  },
+                                  child: const Text('Tentar novamente'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : peticoes.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Nenhuma petição cadastrada ainda.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 34,
+                              ),
+                              itemCount: peticoes.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 11),
+                              itemBuilder: (context, index) {
+                                final peticao = peticoes[index];
+
+                                return CartaoPeticao(
+                                  titulo: peticao['titulo']?.toString() ??
+                                      'Petição',
+                                  assinaturas:
+                                      (peticao['quantidadeAssinaturas'] ?? 0)
+                                          .toString(),
+                                  onTap: () async {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                     builder: (context) => TelaAssinarPeticao(
+  peticao: peticao,
+),
+                                      ),
+                                    );
+
+                                    carregarPeticoes();
+                                  },
+                                );
+                              },
+                            ),
             ),
 
-            // BOTÃO VOLTAR
             Padding(
               padding: const EdgeInsets.only(bottom: 24, top: 8),
               child: SizedBox(
-                width: 110,
-                height: 40,
+                width: 84,
+                height: 27,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -129,7 +233,7 @@ class TelaPeticoes extends StatelessWidget {
                   child: const Text(
                     'Voltar',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -146,40 +250,37 @@ class TelaPeticoes extends StatelessWidget {
 class CartaoPeticao extends StatelessWidget {
   final String titulo;
   final String assinaturas;
+  final VoidCallback onTap;
 
   const CartaoPeticao({
     super.key,
     required this.titulo,
     required this.assinaturas,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 115,
+      height: 78,
       child: Material(
         color: const Color(0xFFCC302E),
         borderRadius: BorderRadius.circular(9),
         child: InkWell(
           borderRadius: BorderRadius.circular(9),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const TelaAssinarPeticao(),
-              ),
-            );
-          },
+          onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 12, 10, 10),
+            padding: const EdgeInsets.fromLTRB(13, 10, 8, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   titulo,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 17,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -188,7 +289,7 @@ class CartaoPeticao extends StatelessWidget {
                   '****************',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 10,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -197,7 +298,7 @@ class CartaoPeticao extends StatelessWidget {
                   '$assinaturas pessoas assinaram',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

@@ -1,15 +1,135 @@
 
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
-class TelaAssinarPeticao extends StatelessWidget {
-  const TelaAssinarPeticao({super.key});
+class TelaAssinarPeticao extends StatefulWidget {
+  final Map<String, dynamic> peticao;
 
+  const TelaAssinarPeticao({
+    super.key,
+    required this.peticao,
+  });
+
+  @override
+  State<TelaAssinarPeticao> createState() => _TelaAssinarPeticaoState();
+}
+
+class _TelaAssinarPeticaoState extends State<TelaAssinarPeticao> {
   static const Color fundo = Color(0xFF5C5052);
   static const Color vermelho = Color(0xFFCC302E);
   static const Color vermelhoEscuro = Color(0xFFB7191E);
 
+  bool assinando = false;
+
+  Future<void> assinar() async {
+    setState(() {
+      assinando = true;
+    });
+
+    try {
+      final usuarioId = await ApiService.obterIdSalvo();
+
+      if (usuarioId == null) {
+        throw Exception('Usuário não identificado. Faça login novamente.');
+      }
+
+      final peticaoId = int.tryParse(
+        widget.peticao['id'].toString(),
+      );
+
+      if (peticaoId == null) {
+        throw Exception('ID da petição inválido.');
+      }
+
+      await ApiService.assinarPeticao(
+        usuarioId: usuarioId,
+        peticaoId: peticaoId,
+      );
+
+      if (!mounted) return;
+
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (contextDialog) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFFF0F0F0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            title: const Text(
+              'Assinado!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFFCC302E),
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: const Text(
+              'Sua assinatura ocorreu com sucesso!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            actions: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(contextDialog).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: vermelhoEscuro,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: const Text('Próximo'),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          assinando = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final titulo = widget.peticao['titulo']?.toString() ?? 'Petição';
+    final descricao =
+        widget.peticao['descricao']?.toString() ?? 'Sem descrição';
+    final autor =
+        widget.peticao['nomeAutor']?.toString() ?? 'Morador';
+    final assinaturas =
+        widget.peticao['quantidadeAssinaturas']?.toString() ?? '0';
+
     return Scaffold(
       backgroundColor: fundo,
       body: SafeArea(
@@ -71,37 +191,44 @@ class TelaAssinarPeticao extends StatelessWidget {
 
             // PETIÇÃO SELECIONADA
             Container(
-              height: 78,
+              constraints: const BoxConstraints(minHeight: 78),
               margin: const EdgeInsets.symmetric(horizontal: 34),
-              padding: const EdgeInsets.fromLTRB(13, 10, 8, 8),
+              padding: const EdgeInsets.fromLTRB(13, 10, 8, 10),
               decoration: BoxDecoration(
                 color: vermelho,
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'PETIÇÃO 1',
-                    style: TextStyle(
+                    titulo,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 7),
+                  const SizedBox(height: 7),
                   Text(
-                    '****************',
-                    style: TextStyle(
+                    descricao,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
-                      letterSpacing: 0.5,
                     ),
                   ),
-                  Spacer(),
+                  const SizedBox(height: 7),
                   Text(
-                    '00 pessoas assinaram',
-                    style: TextStyle(
+                    'Autor: $autor',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    '$assinaturas pessoas assinaram',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -118,57 +245,7 @@ class TelaAssinarPeticao extends StatelessWidget {
               width: 84,
               height: 27,
               child: ElevatedButton(
-                onPressed: () {
-                  showDialog<void>(
-                    context: context,
-                    builder: (contextDialog) {
-                      return AlertDialog(
-                        backgroundColor: const Color(0xFFF0F0F0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        title: const Text(
-                          'Assinado!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFFCC302E),
-                            fontSize: 23,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        content: const Text(
-                          'Sua assinatura ocorreu com sucesso!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        actions: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(contextDialog).pop();
-                                Navigator.pop(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: vermelhoEscuro,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              child: const Text('Próximo'),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                onPressed: assinando ? null : assinar,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: vermelhoEscuro,
                   foregroundColor: Colors.white,
@@ -178,13 +255,22 @@ class TelaAssinarPeticao extends StatelessWidget {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                child: const Text(
-                  'Assinar',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: assinando
+                    ? const SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Assinar',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
 
@@ -195,9 +281,11 @@ class TelaAssinarPeticao extends StatelessWidget {
               width: 84,
               height: 27,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: assinando
+                    ? null
+                    : () {
+                        Navigator.pop(context);
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: vermelhoEscuro,
                   foregroundColor: Colors.white,
